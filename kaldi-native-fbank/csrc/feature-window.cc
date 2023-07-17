@@ -118,17 +118,17 @@ int32_t NumFrames(int64_t num_samples, const FrameExtractionOptions &opts,
   }
 }
 
-void ExtractWindow(int64_t sample_offset, const std::vector<float> &wave,
+void ExtractWindow(int64_t sample_offset, const float *wave, std::size_t wave_size,
                    int32_t f, const FrameExtractionOptions &opts,
                    const FeatureWindowFunction &window_function,
                    std::vector<float> *window,
                    float *log_energy_pre_window /*= nullptr*/) {
-  KNF_CHECK(sample_offset >= 0 && wave.size() != 0);
+  KNF_CHECK(sample_offset >= 0 && wave_size != 0);
 
   int32_t frame_length = opts.WindowSize();
   int32_t frame_length_padded = opts.PaddedWindowSize();
 
-  int64_t num_samples = sample_offset + wave.size();
+  int64_t num_samples = sample_offset + wave_size;
   int64_t start_sample = FirstSampleOfFrame(f, opts);
   int64_t end_sample = start_sample + frame_length;
 
@@ -147,15 +147,15 @@ void ExtractWindow(int64_t sample_offset, const std::vector<float> &wave,
   int32_t wave_start = int32_t(start_sample - sample_offset);
   int32_t wave_end = wave_start + frame_length;
 
-  if (wave_start >= 0 && wave_end <= wave.size()) {
+  if (wave_start >= 0 && wave_end <= wave_size) {
     // the normal case-- no edge effects to consider.
-    std::copy(wave.begin() + wave_start,
-              wave.begin() + wave_start + frame_length, window->data());
+    std::copy(wave + wave_start,
+              wave + wave_start + frame_length, window->data());
   } else {
     // Deal with any end effects by reflection, if needed.  This code will only
     // be reached for about two frames per utterance, so we don't concern
     // ourselves excessively with efficiency.
-    int32_t wave_dim = wave.size();
+    int32_t wave_dim = wave_size;
     for (int32_t s = 0; s < frame_length; ++s) {
       int32_t s_in_wave = s + wave_start;
       while (s_in_wave < 0 || s_in_wave >= wave_dim) {

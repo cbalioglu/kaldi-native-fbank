@@ -123,8 +123,8 @@ void OnlineGenericBaseFeature<C>::ComputeFeatures() {
   for (int32_t frame = num_frames_old; frame < num_frames_new; ++frame) {
     std::fill(window.begin(), window.end(), 0);
     float raw_log_energy = 0.0;
-    ExtractWindow(waveform_offset_, waveform_remainder_, frame, frame_opts,
-                  window_function_, &window,
+    ExtractWindow(waveform_offset_, waveform_remainder_.data(), waveform_remainder_.size(),
+                  frame, frame_opts, window_function_, &window,
                   need_raw_log_energy ? &raw_log_energy : nullptr);
 
     std::vector<float> this_feature(computer_.Dim());

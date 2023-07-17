@@ -137,7 +137,7 @@ int32_t NumFrames(int64_t num_samples, const FrameExtractionOptions &opts,
                    the signal prior to pre-emphasis and multiplying by
                    the windowing function will be written to here.
 */
-void ExtractWindow(int64_t sample_offset, const std::vector<float> &wave,
+void ExtractWindow(int64_t sample_offset, const float *wave, std::size_t wave_size,
                    int32_t f, const FrameExtractionOptions &opts,
                    const FeatureWindowFunction &window_function,
                    std::vector<float> *window,
